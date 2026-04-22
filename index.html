@@ -31,7 +31,6 @@
             min-height: 0;
         }
 
-        /* 調整地圖比例 */
         .map-container {
             flex: 3; 
             position: relative;
@@ -42,11 +41,10 @@
         }
         #map { height: 100%; width: 100%; z-index: 1; }
 
-        /* 詳情欄目增加寬度與比例 */
         .list-container {
             flex: 1; 
-            min-width: 360px; 
-            max-width: 420px; 
+            min-width: 380px; 
+            max-width: 440px; 
             background: #0f172a;
             border-radius: 20px;
             border: 1px solid #1e293b;
@@ -67,7 +65,6 @@
             white-space: nowrap;
             pointer-events: none;
         }
-        .zoom-hide-labels .label-container { opacity: 0; transition: opacity 0.2s; }
         .label-sz { border-left: 3px solid #2563eb; }
         .label-esr { border-left: 3px solid #10b981; }
         .label-hk { border-left: 3px solid #facc15; color: #facc15; }
@@ -105,7 +102,6 @@
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Leaflet Popup Styling */
         .leaflet-popup-content-wrapper { background: #1e293b; color: white; border-radius: 12px; border: 1px solid #334155; }
         .leaflet-popup-tip { background: #1e293b; }
     </style>
@@ -115,31 +111,29 @@
         <div>
             <div class="flex items-center gap-3 mb-1">
                 <span class="bg-blue-600 text-white px-2.5 py-1 rounded-md text-xl font-black shadow-lg">LOG</span>
-                <h1 class="text-2xl font-extrabold text-white tracking-tight">深國際 & ESR 冷鏈看板</h1>
+                <h1 class="text-2xl font-extrabold text-white tracking-tight">深國際 & ESR 冷鏈項目看板</h1>
             </div>
-            <p class="text-slate-400 text-sm font-medium">實時分佈分析 | 中心點：香港葵涌 Chillboxx</p>
+            <p class="text-slate-400 text-sm font-medium">14 個核心地點 | 中心點：香港葵涌 Chillboxx</p>
         </div>
-        <button id="reset-view" class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-2 rounded-xl transition-all font-bold text-sm border border-slate-600 shadow-lg">🔄 重置全覽視圖</button>
+        <button id="reset-view" class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-2 rounded-xl transition-all font-bold text-sm border border-slate-600 shadow-lg">🔄 全覽視圖</button>
     </header>
 
     <main class="main-content">
-        <!-- 左側地圖 -->
         <div class="map-container shadow-2xl">
             <div id="map"></div>
             <div class="absolute bottom-6 left-6 z-[1000] bg-slate-900/95 backdrop-blur-md p-4 rounded-xl border border-slate-700 shadow-2xl space-y-2.5">
                 <div class="flex items-center gap-3 text-xs font-bold text-slate-200">
-                    <span class="w-3.5 h-3.5 rounded-full bg-yellow-400 ring-2 ring-yellow-400/20"></span> 香港 Chillboxx
+                    <span class="w-3.5 h-3.5 rounded-full bg-yellow-400 ring-2 ring-yellow-400/20"></span> 香港 Chillboxx (1)
                 </div>
                 <div class="flex items-center gap-3 text-xs font-bold text-slate-200">
-                    <span class="w-3.5 h-3.5 rounded-full bg-blue-600 ring-2 ring-blue-600/20"></span> 深國際核心 (9)
+                    <span class="w-3.5 h-3.5 rounded-full bg-blue-600 ring-2 ring-blue-600/20"></span> 深國際冷鏈中心 (9)
                 </div>
                 <div class="flex items-center gap-3 text-xs font-bold text-slate-200">
-                    <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-emerald-500/20"></span> ESR 冷鏈 (4)
+                    <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-emerald-500/20"></span> ESR 東莞園區 (4)
                 </div>
             </div>
         </div>
 
-        <!-- 右側清單：更新標題為「項目詳情與 Chillboxx 距離」 -->
         <div class="list-container shadow-2xl">
             <div class="p-6 border-b border-slate-800 bg-slate-900/80">
                 <h2 class="text-white text-xl font-bold leading-tight">項目詳情與<br>Chillboxx 距離</h2>
@@ -153,19 +147,22 @@
         const CHILLBOXX = { lat: 22.3615, lng: 114.1277, name: "Chillboxx 葵涌", company: "香港" };
         
         const rawData = [
-            { name: "深圳黎光冷庫項目", company: "深國際", lat: 22.7535, lng: 114.0538, addr: "深圳龍華區港深莞走廊中心", area: "50,000", auto: "✓", pallet: "33,637 托" },
-            { name: "上海閔行冷鏈園", company: "深國際", lat: 31.0264, lng: 121.3852, addr: "上海閔行區向陽路1135號", area: "52,500", auto: "x", pallet: "12,580 托" },
-            { name: "石家莊正定冷鏈物流園", company: "深國際", lat: 38.1465, lng: 114.5684, addr: "石家庄市正定縣車站西街68號", area: "100,000", auto: "✓", pallet: "未詳列" },
-            { name: "南京江寧空港冷鏈產業園", company: "深國際", lat: 31.8155, lng: 118.8252, addr: "南京市江寧區神舟路36號", area: "32,691", auto: "✓", pallet: "30,000 托" },
-            { name: "杭州大江東冷鏈項目", company: "深國際", lat: 30.3125, lng: 120.5912, addr: "杭州錢塘新區大江東園區", area: "45,800", auto: "✓", pallet: "43,452 托" },
-            { name: "無錫惠山冷鏈項目", company: "深國際", lat: 31.6745, lng: 120.2542, addr: "無錫市惠山區堰新路", area: "38,000", auto: "✓", pallet: "未詳列" },
-            { name: "合肥肥西冷鏈項目", company: "深國際", lat: 31.7255, lng: 117.1852, addr: "合肥市肥西桃花工業園", area: "42,000", auto: "✓", pallet: "未詳列" },
-            { name: "武漢東西湖冷鏈項目", company: "深國際", lat: 30.6252, lng: 114.1255, addr: "武漢市東西湖區高橋五路", area: "55,000", auto: "✓", pallet: "53,302 托" },
-            { name: "成都青白江冷鏈項目", company: "深國際", lat: 30.8242, lng: 104.2542, addr: "成都青白江區鐵路港園區", area: "60,000", auto: "✓", pallet: "未詳列" },
-            { name: "ESR 廣州黃埔冷鏈", company: "ESR", lat: 23.1255, lng: 113.4812, addr: "黃埔區雲埔工業園", area: "80,000", auto: "✓", pallet: "50,000+ 托" },
-            { name: "ESR 上海青浦冷鏈", company: "ESR", lat: 31.1458, lng: 121.1248, addr: "青浦工業園區", area: "120,000", auto: "✓", pallet: "80,000+ 托" },
-            { name: "ESR 成都雙流冷鏈", company: "ESR", lat: 30.5708, lng: 103.9238, addr: "雙流航空港物流園", area: "45,000", auto: "-", pallet: "未詳列" },
-            { name: "ESR 廊坊永清冷鏈", company: "ESR", lat: 39.3155, lng: 116.5122, addr: "廊坊市永清經濟開發區", area: "65,000", auto: "✓", pallet: "40,000+ 托" }
+            // 深國際項目 (9個)
+            { name: "深圳黎光冷庫項目", company: "深國際", lat: 22.7535, lng: 114.0538, addr: "深圳龍華區港深莞走廊中心", type: "專業多層冷庫", temp: "多溫區冷鏈", auto: "✓", pallet: "33,637 托", dock: 128 },
+            { name: "上海閔行冷鏈園", company: "深國際", lat: 31.0264, lng: 121.3852, addr: "上海閔行區向陽路1135號", type: "專業多層冷庫", temp: "多溫區冷鏈", auto: "x", pallet: "12,580 托", dock: 31 },
+            { name: "石家莊正定冷鏈物流園", company: "深國際", lat: 38.1465, lng: 114.5684, addr: "石家庄市正定縣車站西街68號", type: "醫藥/食品專項", temp: "多溫區冷鏈", auto: "✓", pallet: "未詳列", dock: 28 },
+            { name: "南京江寧空港冷鏈產業園", company: "深國際", lat: 31.8155, lng: 118.8252, addr: "南京市江寧區神舟路36號", type: "空港冷鏈中心", temp: "多溫區冷鏈", auto: "✓", pallet: "30,000 托", dock: 30 },
+            { name: "杭州大江東冷鏈項目", company: "深國際", lat: 30.3125, lng: 120.5912, addr: "杭州錢塘新區大江東園區", type: "餐飲零售配中心", temp: "多溫區冷鏈", auto: "✓", pallet: "43,452 托", dock: 32 },
+            { name: "無錫惠山冷鏈項目", company: "深國際", lat: 31.6745, lng: 120.2542, addr: "無錫市惠山區堰新路", type: "專業多層冷庫", temp: "多溫區冷鏈", auto: "✓", pallet: "未詳列", dock: 22 },
+            { name: "合肥肥西冷鏈項目", company: "深國際", lat: 31.7255, lng: 117.1852, addr: "合肥市肥西桃花工業園", type: "專業多層冷庫", temp: "多溫區冷鏈", auto: "✓", pallet: "未詳列", dock: 32 },
+            { name: "武漢東西湖冷鏈項目", company: "深國際", lat: 30.6252, lng: 114.1255, addr: "武漢市東西湖區高橋五路", type: "專業多層冷庫", temp: "多溫區冷鏈", auto: "✓", pallet: "53,302 托", dock: 44 },
+            { name: "成都青白江冷鏈項目", company: "深國際", lat: 30.8242, lng: 104.2542, addr: "成都青白江區鐵路港園區", type: "專業多層冷庫", temp: "多溫區冷鏈", auto: "✓", pallet: "未詳列", dock: 45 },
+            
+            // ESR 項目 (4個，根據最新資料更新為東莞常溫高標倉)
+            { name: "ESR 東莞沙田園區", company: "ESR", lat: 22.8455, lng: 113.6125, addr: "東莞市沙田鎮 (靠近沙田港)", type: "單層高標干倉 (H: 10.6m)", temp: "常溫 (支持三溫冷鏈改造)", pallet: "可承重 3T/㎡", advantage: "適合進口食品、跨境冷鏈", operational: "已有冷凍/冷藏租戶運營" },
+            { name: "ESR 東莞洪梅一期", company: "ESR", lat: 23.0125, lng: 113.6258, addr: "東莞市洪梅鎮", type: "單層高標干倉 (H: 9m)", temp: "常溫 (局部改造恆溫/冷藏)", pallet: "可承重 3T/㎡", advantage: "大灣區電商倉配圈", operational: "醫藥、電子元器件恆溫倉" },
+            { name: "ESR 東莞洪梅二期", company: "ESR", lat: 23.0155, lng: 113.6312, addr: "東莞市洪梅鎮", type: "單層高標干倉 (H: 9-10m)", temp: "常溫 (支持整體冷鏈改造)", pallet: "可承重 3T/㎡", advantage: "多溫區混合業務彈性大", operational: "醫藥、電商、快消業務" },
+            { name: "ESR 東莞麻湧園區", company: "ESR", lat: 23.0458, lng: 113.5512, addr: "東莞市麻湧鎮 (毗鄰新沙港)", type: "單層高標干倉 (H: 9m)", temp: "常溫倉 (無冷鏈設計)", pallet: "可承重 3T/㎡", advantage: "港口配套、集裝箱拆箱", operational: "跨境電商、內貿分撥" }
         ];
 
         function calcDist(p1, p2) {
@@ -179,15 +176,8 @@
         let map, fGroup, activeLine = null;
 
         function init() {
-            map = L.map('map', { zoomControl: false, attributionControl: false }).setView([30, 114], 5);
+            map = L.map('map', { zoomControl: false, attributionControl: false }).setView([22.8, 114], 8);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
-
-            map.on('zoomend', () => {
-                const z = map.getZoom();
-                const mapDiv = document.getElementById('map');
-                if (z < 5) mapDiv.classList.add('zoom-hide-labels');
-                else mapDiv.classList.remove('zoom-hide-labels');
-            });
 
             fGroup = L.featureGroup();
 
@@ -226,24 +216,22 @@
                     })
                 }).addTo(map);
 
-                let labelDir = 'top';
-                let labelOffset = [0, -28];
-                if (w.name.includes("黎光")) { labelDir = 'right'; labelOffset = [16, -16]; }
-                if (w.name.includes("黃埔")) { labelDir = 'left'; labelOffset = [-16, -16]; }
-
-                marker.bindTooltip(w.name.replace("冷庫項目","").replace("冷鏈項目","").replace("冷鏈園",""), { 
-                    permanent: true, direction: labelDir, offset: labelOffset, className: `label-container ${labelTheme}`
+                marker.bindTooltip(w.name.replace("東莞",""), { 
+                    permanent: false, direction: 'top', offset: [0, -10], className: `label-container ${labelTheme}`
                 });
 
                 const popupHtml = `
-                    <div class="p-3 min-w-[260px]">
+                    <div class="p-3 min-w-[280px]">
                         <div class="${isESR ? 'text-emerald-400' : 'text-blue-400'} text-[11px] font-black mb-1 uppercase tracking-wider">${w.company} LOGISTICS</div>
-                        <div class="text-white font-bold text-[16px] mb-3 leading-tight">${w.name}</div>
-                        <div class="space-y-2 text-[13px] text-slate-300">
+                        <div class="text-white font-bold text-[16px] mb-2 leading-tight">${w.name}</div>
+                        <div class="space-y-2 text-[12px] text-slate-300">
                             <div class="flex gap-2"><span>📍</span><span class="leading-snug">${w.addr}</span></div>
-                            <div class="flex gap-2"><span>🏗️</span><span>建築面積: ${w.area} ㎡</span></div>
-                            <div class="flex gap-2"><span>🤖</span><span>自動化: ${w.auto === '✓' ? '智慧自動化' : '標準冷鏈'}</span></div>
-                            <div class="flex gap-2"><span>📦</span><span>規模: ${w.pallet}</span></div>
+                            <div class="flex gap-2"><span>🏗️</span><span>類型: ${w.type}</span></div>
+                            <div class="flex gap-2"><span>🌡️</span><span>屬性: ${w.temp}</span></div>
+                            ${isESR ? `<div class="flex gap-2"><span>⭐</span><span class="text-emerald-300">${w.advantage}</span></div>` : 
+                                     `<div class="flex gap-2"><span>📦</span><span>托位: ${w.pallet}</span></div>`}
+                            ${isESR ? `<div class="flex gap-2"><span>💼</span><span class="italic text-slate-400">${w.operational}</span></div>` : 
+                                     `<div class="flex gap-2"><span>🚛</span><span>貨口: ${w.dock} 個</span></div>`}
                         </div>
                     </div>
                 `;
@@ -253,19 +241,18 @@
                 w.marker = marker; 
 
                 const card = document.createElement('div');
-                card.className = `warehouse-card group p-5 bg-slate-900 border border-slate-800 rounded-2xl hover:border-slate-400 transition-all cursor-pointer flex justify-between items-center shadow-lg`;
+                card.className = `warehouse-card group p-4 bg-slate-900 border border-slate-800 rounded-2xl hover:border-slate-400 transition-all cursor-pointer flex justify-between items-center shadow-lg`;
                 card.innerHTML = `
                     <div class="flex-1 pr-4 overflow-hidden">
-                        <h4 class="font-bold text-white text-[15px] group-hover:text-blue-400 transition-colors truncate mb-1.5">${w.name}</h4>
-                        <div class="flex items-center gap-2.5">
-                            <span class="${isESR ? 'text-emerald-500 border-emerald-500/30' : 'text-blue-500 border-blue-500/30'} text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded border bg-white/5">${w.company}</span>
-                            <span class="text-slate-700 text-[10px]">|</span>
-                            <span class="text-slate-300 text-[12px] font-medium">${w.auto === '✓' ? '🤖 自動化系統' : '🏢 標準冷鏈'}</span>
+                        <h4 class="font-bold text-white text-[14px] group-hover:text-blue-400 transition-colors truncate mb-1">${w.name}</h4>
+                        <div class="flex items-center gap-2">
+                            <span class="${isESR ? 'text-emerald-500 border-emerald-500/30' : 'text-blue-500 border-blue-500/30'} text-[9px] font-black uppercase px-2 py-0.5 rounded border bg-white/5">${w.company}</span>
+                            <span class="text-slate-400 text-[10px] truncate">${isESR ? '🏢 常溫可改造' : '❄️ 專業冷庫'}</span>
                         </div>
                     </div>
                     <div class="flex-shrink-0 text-right">
-                        <div class="text-[13px] font-black ${textTheme} ${bgTheme} px-3.5 py-2 rounded-xl border border-white/10 inline-block min-w-[85px] text-center shadow-inner">
-                            ${w.dist.toFixed(0)} <span class="text-[10px] opacity-70">KM</span>
+                        <div class="text-[12px] font-black ${textTheme} ${bgTheme} px-3 py-2 rounded-lg border border-white/5 inline-block min-w-[75px] text-center">
+                            ${w.dist.toFixed(0)} <span class="text-[9px] opacity-60">KM</span>
                         </div>
                     </div>
                 `;
@@ -275,17 +262,18 @@
                     card.classList.add('active-card');
                     w.marker.openPopup();
                     drawLine(CHILLBOXX, w, isESR ? '#10b981' : '#3b82f6');
-                    map.setView([w.lat, w.lng], 9, { animate: true });
+                    map.setView([w.lat, w.lng], 10, { animate: true });
                 };
                 list.appendChild(card);
             });
 
-            map.fitBounds(fGroup.getBounds().pad(0.25));
+            fGroup.addLayer(chillMarker);
+            map.fitBounds(fGroup.getBounds().pad(0.1));
             
             document.getElementById('reset-view').onclick = () => {
                 if (activeLine) { map.removeLayer(activeLine); activeLine = null; }
                 document.querySelectorAll('.warehouse-card').forEach(c => c.classList.remove('active-card'));
-                map.fitBounds(fGroup.getBounds().pad(0.25));
+                map.fitBounds(fGroup.getBounds().pad(0.1));
             };
         }
 
@@ -293,7 +281,7 @@
             if (activeLine) map.removeLayer(activeLine);
             activeLine = L.polyline(
                 [[start.lat, start.lng], [end.lat, end.lng]],
-                { color: color, weight: 2.5, opacity: 0.7, dashArray: '10, 10', className: 'path-animation' }
+                { color: color, weight: 2, opacity: 0.6, dashArray: '8, 8', className: 'path-animation' }
             ).addTo(map);
         }
 
